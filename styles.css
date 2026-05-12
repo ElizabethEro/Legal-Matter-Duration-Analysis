@@ -153,3 +153,23 @@ a:hover {
     border-left: 6px solid #0ea5e9 !important;
     background: #f8fafc !important;
 }
+.github-link {
+    font-size: 13px !important;
+    color: #64748b !important;
+    margin-top: -10px;
+    margin-bottom: 30px;
+}
+
+.github-link a {
+    color: #2563eb !important;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.github-link a:hover {
+    text-decoration: underline;
+}
+/* Justify all paragraph text */
+p {
+    text-align: justify;
+}

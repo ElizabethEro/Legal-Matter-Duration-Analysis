@@ -2,15 +2,19 @@
 title: "What Operational Factors Influence the Duration of Legal Matters, and What Process Improvements Can Reduce Resolution Time?"
 author: "Elizabeth Ero"
 date: today
+
 format:
   html:
     theme: cosmo
     toc: true
-    toc-depth: 3
-    smooth-scroll: true
-    code-fold: true
     css: styles.css
+    code-fold: true
+    code-summary: "View Analysis Code"
 ---
+
+<div class="github-link">
+GitHub Repository: <a href="https://github.com/ElizabethEro/Legal-Matter-Duration-Analysis.git">Legal-Matter-Duration-Analysis</a>
+</div>
 
 # 1. Executive Summary
 
@@ -457,9 +461,9 @@ Based on the findings of this study, several operational and process-improvement
 
 ## 1. Reduce Excessive Revision Cycles Through Standardisation
 
-The analysis identified **revision count as the strongest predictor of prolonged legal matter duration**, indicating that repeated drafting and negotiation cycles significantly delay matter completion.
+The analysis identified revision count as the strongest predictor of prolonged legal matter duration, indicating that repeated drafting and negotiation cycles significantly delay matter completion.
 
-To address this, the legal function should expand the use of **standardised contract templates, pre-approved clauses, fallback language libraries, and negotiation playbooks**. For routine and low-risk matters, standard templates should be adopted more consistently to minimise unnecessary iterations and improve drafting efficiency.
+To address this, the legal function should expand the use of standardised contract templates, pre-approved clauses, fallback language libraries, and negotiation playbooks. For routine and low-risk matters, standard templates should be adopted more consistently to minimise unnecessary iterations and improve drafting efficiency.
 
 Clearer internal negotiation parameters will also help reduce repeated business-side amendments and improve overall turnaround time without compromising legal quality or compliance.
 
@@ -467,23 +471,23 @@ Clearer internal negotiation parameters will also help reduce repeated business-
 
 ## 2. Streamline Approval Structures
 
-The findings suggest that **additional approval layers contribute to longer matter duration**, reflecting potential procedural inefficiencies.
+The findings suggest that additional approval layers contribute to longer matter duration, reflecting potential procedural inefficiencies.
 
-While governance remains essential, the organisation should adopt a **risk-based approval framework**, where low-risk or routine matters follow simplified approval routes, while high-risk or strategic matters undergo enhanced review. Delegated approval authority for standard transactions may also reduce bottlenecks and improve responsiveness.
+While governance remains essential, the organisation should adopt a risk-based approval framework, where low-risk or routine matters follow simplified approval routes, while high-risk or strategic matters undergo enhanced review. Delegated approval authority for standard transactions may also reduce bottlenecks and improve responsiveness.
 
 ---
 
 ## 3. Improve Early Stakeholder Alignment
 
-Frequent revisions may be driven by **incomplete instructions or shifting stakeholder expectations during drafting stages**.
+Frequent revisions may be driven by incomplete instructions or shifting stakeholder expectations during drafting stages.
 
-To mitigate this, the organisation should strengthen **pre-engagement alignment processes**, ensuring clearer commercial instructions, defined negotiation objectives, and earlier engagement between legal and business teams before drafting begins. Structured kickoff meetings can help reduce ambiguity and improve efficiency.
+To mitigate this, the organisation should strengthen pre-engagement alignment processes, ensuring clearer commercial instructions, defined negotiation objectives, and earlier engagement between legal and business teams before drafting begins. Structured kickoff meetings can help reduce ambiguity and improve efficiency.
 
 ---
 
 ## 4. Develop Complexity-Based Workflow Segmentation
 
-The results show that **matter complexity influences legal turnaround time**, although not as strongly as revision cycles.
+The results show that matter complexity influences legal turnaround time, although not as strongly as revision cycles.
 
 The legal department should classify matters based on complexity and risk, allowing for differentiated workflows:
 
@@ -512,7 +516,7 @@ This will enable earlier identification of bottlenecks and support continuous pr
 
 ## 6. Review External Counsel Engagement Processes
 
-The findings indicate that **matters handled by external counsel take significantly longer than internal matters**.
+The findings indicate that matters handled by external counsel take significantly longer than internal matters.
 
 To improve efficiency, the organisation should review external counsel management practices, including:
 
@@ -529,7 +533,7 @@ Where appropriate, routine matters may be retained internally to reduce delays a
 
 This study demonstrates the value of analytics in identifying inefficiencies in legal workflows.
 
-The organisation should institutionalise **legal operations analytics** to support continuous improvement by tracking trends in:
+The organisation should institutionalise legal operations analytics to support continuous improvement by tracking trends in:
 
 - turnaround time  
 - revision cycles  
