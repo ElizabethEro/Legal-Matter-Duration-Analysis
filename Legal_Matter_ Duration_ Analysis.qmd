@@ -1,0 +1,742 @@
+---
+title: "What Operational Factors Influence the Duration of Legal Matters, and What Process Improvements Can Reduce Resolution Time?"
+author: "Elizabeth Ero"
+date: today
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    css: styles.css
+    code-fold: true
+    code-summary: "View Analysis Code"
+---
+
+<div class="github-link">
+GitHub Repository: <a href="https://github.com/ElizabethEro/Legal-Matter-Duration-Analysis.git">Legal-Matter-Duration-Analysis</a>
+</div>
+
+# 1. Executive Summary
+
+This study investigates the operational factors that influence the duration of legal matters within an upstream oil and gas legal environment and evaluates how legal operations can improve turnaround efficiency. In fast-paced corporate environments, prolonged legal review timelines may delay commercial execution, increase transaction costs, and create operational bottlenecks for business units. The study therefore seeks to determine which operational variables most significantly contribute to extended legal matter duration.
+
+The analysis is based on anonymised internal legal operations data collected from contract review trackers and email correspondences, covering the period from May 2021 to May 2026. The dataset contains 100 legal contracts across commercial and technical categories.
+
+Using exploratory data analysis (EDA), data visualisation, hypothesis testing, correlation analysis, and regression modelling, the study examines the relationship between legal matter duration and operational variables such as matter complexity, revision cycles, approval layers, matter category, and counsel type.
+
+Preliminary findings suggest that legal matter duration is strongly associated with operational complexity, the number of revision cycles, and approval escalation structures. The study concludes that streamlining approval processes, reducing unnecessary negotiation loops, and introducing standardised contract workflows may significantly reduce legal turnaround time and improve operational efficiency within the legal function.
+
+# 2. Professional Disclosure
+
+## Professional Background
+
+I am a legal counsel in an upstream oil and gas company. My task involves legal advisory, contract drafting and negotiation, transaction support, corporate governance, and regulatory compliance activities within the oil and gas industry. My role requires management and review of a wide range of legal matters, including commercial agreements, regulatory filings, joint venture arrangements, procurement contracts, employment-related matters, and stakeholder negotiations.
+
+A critical aspect of my responsibilities involves ensuring that legal matters are resolved efficiently without compromising legal quality, regulatory compliance, or commercial protection. Delays in legal review processes can affect transaction execution timelines, procurement activities, operational approvals, and broader business objectives. Consequently, understanding the factors that drive legal matter duration is operationally important to both the legal department and the wider business.
+
+This study directly aligns with my day-to-day professional responsibilities because it evaluates how operational processes within legal departments influence turnaround time and identifies opportunities for workflow improvement and process optimisation.
+
+## Operational Relevance of Techniques
+
+### Exploratory Data Analysis (EDA)
+
+Exploratory Data Analysis is operationally relevant because legal matter records often contain inconsistencies, missing values, outliers, and uneven distributions that may distort operational insights if left unaddressed. EDA enables the identification of bottlenecks, unusually delayed matters, and data quality issues that may affect legal operations reporting and decision-making. Within the context of this study, EDA assists in understanding how legal matters are distributed across duration ranges, matter types, and operational complexity levels.
+
+### Data Visualisation
+
+Data visualisation is particularly important within legal operations because senior management and business stakeholders often require simplified visual summaries of operational performance rather than technical statistical outputs. Visualisations such as boxplots, histograms, scatterplots, and correlation heatmaps help communicate trends in legal turnaround time, operational workload, and process inefficiencies in a manner that supports business decision-making. In this study, visualisation techniques are used to demonstrate how matter complexity, approval structures, and revision cycles influence legal matter duration.
+
+### Hypothesis Testing
+
+Hypothesis testing supports evidence-based legal operations management by determining whether observed differences in legal matter duration are statistically significant rather than random occurrences. For example, the study evaluates whether matters handled by external counsel differ significantly in duration from matters handled internally, and whether certain categories of legal matters systematically require longer resolution periods. These findings may support decisions regarding resource allocation, external counsel engagement, and workflow redesign.
+
+### Correlation Analysis
+
+Correlation analysis is operationally useful because legal processes are often influenced by multiple interconnected factors. Understanding the strength and direction of relationships between operational variables allows legal management to identify which factors are most strongly associated with delays. In this study, correlation analysis helps determine whether variables such as complexity score, revision count, and approval layers are positively associated with increased matter duration.
+
+### Regression Analysis
+
+Regression analysis is highly relevant to legal operations because it enables the simultaneous assessment of multiple operational variables affecting legal matter duration. Unlike simple descriptive analysis, regression modelling quantifies the independent impact of each predictor variable while controlling for other factors. This allows the legal department to identify which operational factors contribute most significantly to prolonged turnaround time and to prioritise process improvement initiatives accordingly. The findings from the regression model are expected to provide actionable recommendations for reducing legal matter resolution time and improving operational efficiency.
+
+# 3. Data Collection and Sampling
+
+## Data Source
+
+The dataset used for this study was collected from anonymised internal legal operations records maintained within the legal function. The primary sources of data include:
+
+- Legal department tasks tracker
+- Email correspondences
+- Approval workflow records
+
+The dataset captures operational information relating to legal matters handled within the organisation between May 2021 and May 2026.
+
+## Sampling Method and Data Collection
+
+A purposive sampling approach was adopted to ensure that the dataset adequately represented the different categories of legal matters handled within the legal function. The sample includes commercial and technical matters.
+
+To satisfy the minimum assessment requirements, the dataset contains 100 observations and includes both numeric and categorical operational variables relevant to legal workflow analysis. Each observation represents a distinct legal matter recorded within the legal operations process.
+
+The selected time period was considered appropriate because it captures sufficient operational variation across multiple business cycles, transaction types, and organisational approval processes.
+
+The data collection process involved extracting operational information from internal legal tracking systems and manually consolidating the records into a structured spreadsheet for analysis. Sensitive information such as contract titles, company names, personnel names, and commercially confidential information were excluded or anonymised before analysis.
+
+Each legal matter was assigned a unique anonymised identifier, and operational variables relevant to the study objective were recorded, including:
+
+Matter duration (days);
+Matter type;
+Counsel type;
+Complexity score;
+Revision count; and
+Approval layers.
+
+The final dataset was cleaned and standardised prior to analysis to improve consistency and reduce data quality issues.
+
+## Variables Collected
+
+| Variable | Type | Description |
+|------------------------|------------------------|------------------------|
+| Matter ID | Identifier | Unique anonymised matter reference |
+| Duration Days | Numeric | Number of days between opening and closure |
+| Complexity Score | Numeric | Complexity rating (1–5) |
+| Revision Count | Numeric | Number of negotiation/review cycles |
+| Approval Layers | Numeric | Number of approval stages |
+| Counsel Type | Categorical | In-house or External |
+| Matter Type | Categorical | Commercial or Technical |
+| Open Date | Date | Date matter commenced |
+
+## Ethical Considerations
+
+Given the confidential nature of legal operations data, all personally identifiable information (PII), commercially sensitive information, and proprietary business information were removed before analysis. No counterparty identities, or internal personnel names are disclosed in this study. Generic upstream contract names were utilised to identified contracts.
+
+The study is conducted strictly for academic purposes, and the dataset used in the analysis is anonymised to protect organisational confidentiality and comply with internal data privacy expectations.
+
+# 4. Data Description
+
+## Load Required Packages
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(corrplot)
+library(effsize)
+```
+
+## Import Dataset
+
+```{r}
+legal_data <- read.csv("Data Analytics Exam - Legal Matters Data.csv")
+```
+
+## Data Cleaning
+
+```{r}
+# Clean column names
+names(legal_data) <- gsub("\\.", "_", names(legal_data))
+
+# Convert date variable and remove duplicates
+legal_data <- legal_data %>%
+  mutate(
+    Open_Date = as.Date(Open_Date, format = "%d/%m/%Y"),
+    
+    # Standardise categorical variables (remove extra spaces)
+    Counsel_Type = stringr::str_trim(Counsel_Type),
+    Matter_Type  = stringr::str_trim(Matter_Type)
+  ) %>%
+  distinct()
+```
+
+## View Dataset
+
+```{r}
+head(legal_data)
+```
+
+## Dataset Structure
+
+```{r}
+str(legal_data)
+```
+
+## Summary Statistics
+
+```{r}
+summary(legal_data)
+```
+
+## Missing Values
+
+```{r}
+colSums(is.na(legal_data))
+```
+
+## Data Types
+
+```{r}
+sapply(legal_data, class)
+```
+
+## Data Quality Assessment and Cleaning
+
+Several data quality checks were conducted prior to analysis to improve the reliability and consistency of the dataset.
+
+### Outlier Detection
+
+Exploratory analysis identified several unusually long-running legal matters, including observations with substantially higher duration values than the dataset average. These outliers were reviewed and retained because they reflected genuine operational realities rather than data-entry errors.
+
+### Date Formatting Inconsistencies
+
+The `Open.Date` variable contained inconsistent date formatting styles across records. Date values were standardised into a consistent date format to support accurate time-based analysis.
+
+### Categorical Variable Standardisation
+
+Categorical fields such as `Counsel.Type` and `Matter.Type` were reviewed for naming consistency and formatting uniformity to ensure accurate grouping and statistical testing.
+
+### Missing Value Validation
+
+A missing-value assessment confirmed that the final dataset contained no missing observations across the selected analytical variables.
+
+
+# 5. Exploratory Data Analysis (EDA)
+
+## Distribution of Matter Duration
+
+```{r}
+ggplot(legal_data, aes(x = `Duration_Days`)) +
+  geom_histogram(bins = 20, fill = "steelblue") +
+  labs(
+    title = "Distribution of Legal Matter Duration",
+    x = "Duration (Days)",
+    y = "Frequency"
+  )
+```
+
+### Interpretation
+
+This distribution evaluates whether matter duration is normally distributed or skewed.The distribution of legal matter duration is positively skewed (right-skewed), indicating that while a substantial proportion of legal matters are resolved within relatively short timeframes, a smaller number of matters take disproportionately longer to close.
+
+This pattern suggests the presence of operational bottlenecks or exception cases, rather than uniform processing delays across all matters. The mean duration is likely inflated by these extreme values (e.g., the maximum of 331 days), which indicates that a small subset of complex or stalled matters significantly impacts overall legal turnaround performance.
+
+From an operational perspective, this implies that improving average performance alone is insufficient; targeted intervention on outlier-driven delays is likely to yield the most meaningful efficiency gains.
+
+## Outlier Detection
+
+```{r}
+ggplot(legal_data, aes(y = `Duration_Days`)) +
+  geom_boxplot(fill = "orange") +
+  labs(
+    title = "Outlier Detection for Matter Duration",
+    y = "Duration (Days)"
+  )
+```
+
+### Interpretation
+
+This boxplot identifies unusually long-running legal matters.The boxplot reveals several high-duration outliers, indicating legal matters that significantly exceed the typical processing time.
+
+Importantly, these outliers are retained because they likely represent legitimate operational scenarios, such as:highly complex negotiations, multi-party approvals, external stakeholder delays,regulatory dependencies, etc.
+
+Rather than being treated as data errors, these observations should be interpreted as process stress points within the legal workflow.
+
+Operationally, this suggests that legal delay is not uniformly distributed but concentrated in specific categories of matters that may require dedicated escalation or specialised handling pathways.
+
+## Duration by Counsel Type
+
+```{r}
+ggplot(legal_data, aes(x = `Counsel_Type`, y = `Duration_Days`)) +
+  geom_boxplot(fill = "lightgreen") +
+  labs(
+    title = "Duration by Counsel Type",
+    x = "Counsel Type",
+    y = "Duration (Days)"
+  )
+```
+
+### Interpretation
+
+This visualisation compares matter duration between in-house and external counsel.The comparison indicates a clear difference in matter duration between internal and external counsel-managed matters.
+
+Matters handled by external counsel show substantially higher average duration, suggesting that additional coordination layers, communication delays, or external dependency structures may be contributing to extended turnaround times.
+
+However, this observation should be interpreted as an association rather than causation, as external counsel is often engaged for inherently more complex or higher-risk matters. Therefore, counsel type may also be acting as a proxy for underlying matter complexity.
+
+## Duration by Matter Type
+
+```{r}
+ggplot(legal_data, aes(x = `Matter_Type`, y = `Duration_Days`)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(
+    title = "Duration by Matter Type",
+    x = "Matter Type",
+    y = "Duration (Days)"
+  )
+```
+
+### Interpretation
+
+This chart compares legal matter duration across different categories.The analysis shows that legal matter duration differs across matter categories, indicating that certain types of matters are inherently more time-intensive.
+
+This suggests that operational workload is not evenly distributed across matter types, and that some categories likely require deeper technical review, additional stakeholder engagement and more extensive approval processes.
+
+This reinforces the idea that matter classification is a key determinant of workflow efficiency, and supports the need for differentiated process handling by category.
+
+# 6. Data Visualisation
+
+## Complexity Score vs Duration
+
+```{r}
+ggplot(legal_data, aes(x = `Complexity_Score`, y = `Duration_Days`)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm", color = "red") +
+  labs(
+    title = "Complexity Score vs Duration",
+    x = "Complexity Score",
+    y = "Duration (Days)"
+  )
+```
+
+### Interpretation
+
+This visualisation evaluates whether higher complexity increases legal matter duration.The scatterplot indicates a positive relationship between complexity score and legal matter duration, suggesting that more complex matters tend to take longer to resolve.
+
+However, the relationship is not perfectly linear, implying that complexity alone does not fully explain variation in duration. This suggests the presence of additional operational drivers, such as revision cycles and approval structures, which may amplify or moderate the effect of complexity.
+
+Operationally, complexity should therefore be treated as a contributing factor rather than a standalone predictor of turnaround time.
+
+## Revision Count vs Duration
+
+```{r}
+ggplot(legal_data, aes(x = `Revision_Count`, y = `Duration_Days`)) +
+  geom_point(color = "darkgreen") +
+  geom_smooth(method = "lm", color = "red") +
+  labs(
+    title = "Revision Count vs Duration",
+    x = "Revision Count",
+    y = "Duration (Days)"
+  )
+```
+
+### Interpretation
+
+This chart examines whether additional negotiation cycles increase matter duration.This relationship is the strongest observed in the dataset, indicating a very strong positive association between revision cycles and legal matter duration.
+
+This suggests that each additional round of negotiation, review, or redrafting introduces a compounding delay effect on overall turnaround time.
+
+Importantly, this may reflect unclear initial instructions, misalignment between stakeholders,iterative negotiation structures, and lack of standardised contracting templates
+
+From a process perspective, revision cycles represent a high-impact operational bottleneck and are a key leverage point for efficiency improvement.
+
+## Approval Layers vs Duration
+
+```{r}
+ggplot(legal_data, aes(x = `Approval_Layers`, y = `Duration_Days`)) +
+  geom_point(color = "purple") +
+  geom_smooth(method = "lm", color = "red") +
+  labs(
+    title = "Approval Layers vs Duration",
+    x = "Approval Layers",
+    y = "Duration (Days)"
+  )
+```
+
+### Interpretation
+
+This visualisation assesses whether approval complexity affects turnaround time.The relationship between approval layers and duration shows a moderate positive association, indicating that matters requiring more approval stages tend to take longer to complete.
+
+However, the effect appears weaker compared to revision cycles, suggesting that approval structures may not be the primary driver of delay but rather a secondary contributor to process latency.
+
+This implies that while governance is necessary for risk control, excessive approval layering may introduce avoidable delays, particularly for low-risk matters that do not require multi-stage escalation.
+
+# 7. Hypothesis Testing
+
+## Hypothesis 1
+
+### Research Objective
+
+To determine whether legal matter duration differs significantly between in-house and external counsel.
+
+### Hypotheses
+
+- H0: There is no significant difference in matter duration between counsel types.
+- H1: There is a significant difference in matter duration between counsel types.
+
+## t-Test
+
+```{r}
+t_test_result <- t.test(`Duration_Days` ~ `Counsel_Type`, data = legal_data)
+
+t_test_result
+```
+
+## Effect Size
+
+```{r}
+cohen.d(`Duration_Days` ~ `Counsel_Type`, data = legal_data)
+```
+
+### Interpretation
+
+The p-value and effect size determine whether counsel structure materially affects turnaround time.The hypothesis test reveals a statistically significant difference in legal matter duration between internal and external counsel (p = 0.0369), with external counsel-managed matters taking substantially longer on average.
+
+From a business operations perspective, this finding indicates that counsel structure is not neutral in its impact on legal efficiency. External counsel matters exhibit materially higher turnaround times, suggesting the presence of additional operational friction.
+
+However, this result should not be interpreted as external counsel being inherently inefficient. Instead, it likely reflects structural and process-driven differences, including increased coordination requirements between internal legal teams and external advisers,longer communication loops across organisational boundaries, additional review and approval checkpoints before instructions are executed and selective allocation of external counsel to more complex or high-risk matters.
+
+The effect size (Cohen’s d ≈ 2.92) indicates an extremely large practical difference, meaning this is not just statistically significant but also operationally meaningful.
+
+**Business implication:**
+
+This suggests that external counsel engagement introduces a measurable delay premium, which should be explicitly factored into matter planning, resourcing decisions, and turnaround expectations. It also supports the case for retaining more routine matters in-house, where feasible
+
+## Hypothesis 2
+
+### Research Objective
+
+To determine whether matter duration differs significantly across matter categories.
+
+### Hypotheses
+
+- H0: Mean duration does not differ across matter types.
+- H1: Mean duration differs across matter types.
+
+## ANOVA
+
+```{r}
+anova_model <- aov(`Duration_Days` ~ `Matter_Type`, data = legal_data)
+
+summary(anova_model)
+```
+
+### Interpretation
+
+This analysis evaluates whether certain legal matter categories systematically require more time.The ANOVA results indicate a statistically significant difference in legal matter duration across matter types (p < 0.001).
+
+This confirms that legal workload is not homogenous, and that different categories of legal matters impose different operational time burdens on the legal function.
+
+From a business perspective, this implies that matter type is effectively a structural driver of workload intensity, likely due to differences in regulatory complexity, technical depth of review required, number of stakeholders involved, commercial sensitivity and negotiation intensity.
+
+**Business implication:**
+
+Legal operations cannot be managed using a “one-size-fits-all” turnaround expectation. Instead, matter-type-based service level expectations (SLA segmentation) should be introduced to better align workload expectations with operational reality
+
+# 8. Correlation Analysis
+
+## Select Numeric Variables
+
+```{r}
+numeric_data <- legal_data %>%
+  select(`Duration_Days`,
+         `Complexity_Score`,
+         `Revision_Count`,
+         `Approval_Layers`)
+```
+
+## Correlation Matrix
+
+```{r}
+cor_matrix <- cor(numeric_data, use = "complete.obs")
+
+cor_matrix
+```
+
+## Correlation Heatmap
+
+```{r}
+corrplot(
+  cor_matrix,
+  method = "color",
+  addCoef.col = "black"
+)
+```
+
+### Interpretation
+
+This analysis identifies the strongest operational relationships associated with legal matter duration.The correlation analysis identifies strong interdependencies between operational variables, particularly between revision count, complexity, and matter duration.The key business insights have been identified below.
+
+### Key Business Insights
+
+#### **1. Revision Count is the strongest operational driver (r ≈ 0.87 with duration)**
+
+This represents the most important operational finding in the dataset. The very strong positive correlation indicates that legal matter duration increases sharply as revision cycles increase.
+
+From a business operations standpoint, revision cycles are not merely a symptom of delay; they are a primary mechanism through which delay is generated and compounded.
+
+This suggests systemic inefficiencies such as:
+- incomplete or ambiguous initial instructions from business stakeholders  
+- late-stage changes in commercial position  
+- lack of standardised contracting frameworks  
+- iterative negotiation structures without predefined boundaries  
+
+**Business implication:**  
+Reducing revision cycles is likely to deliver the highest marginal reduction in legal turnaround time, making it the most impactful process improvement lever in the system.
+
+---
+
+#### **2. Complexity Score shows a moderate-to-strong relationship with duration (r ≈ 0.60)**
+
+Complexity is positively associated with duration, confirming that intrinsic legal difficulty contributes to slower turnaround times.
+
+However, complexity is less strongly correlated with duration than revision count, which is a critical insight.
+
+**Business interpretation:**  
+This suggests that process inefficiencies (revisions) matter more than inherent complexity in driving delays.
+
+In other words:  
+> “How work is processed has a stronger effect on duration than how complex the work is.”
+
+**Business implication:**  
+Process redesign is likely to yield greater efficiency gains than attempting to simplify legal work itself.
+
+---
+
+#### **3. Approval Layers show weaker correlation (r ≈ 0.38 with duration)**
+
+Approval layers are positively related to duration, but the relationship is relatively weaker compared to revision cycles.
+
+**Business interpretation:**  
+This suggests that while governance structures contribute to delay, they are not the primary bottleneck in legal workflow performance.
+
+Instead, approval layers act as a moderate amplifying factor, increasing delay primarily when combined with high revision cycles or complex matters.
+
+**Business implication:**  
+Approval structures should not be broadly reduced, but rather selectively optimised using a risk-based approval model.
+
+# 9. Regression Analysis
+
+## Regression Model
+
+```{r}
+regression_model <- lm(
+  `Duration_Days` ~
+    `Counsel_Type`+
+    `Matter_Type` +
+    `Complexity_Score` +
+    `Revision_Count` +
+    `Approval_Layers`,
+  data = legal_data
+)
+
+summary(regression_model)
+```
+
+### Interpretation
+
+This model estimates the combined effect of operational variables on matter duration.The regression model explains approximately 77.6% of the variation in legal matter duration, indicating strong explanatory power and a good overall model fit for operational interpretation. This suggests that the selected operational variables collectively provide a strong framework for understanding what drives legal matter turnaround time within the organisation.
+
+---
+
+### 1. Revision Count (β = +9.10, p < 0.001)
+
+Revision count is the most statistically and operationally significant predictor of legal matter duration in the model.
+
+Each additional revision cycle is associated with an average increase of approximately 9 days in legal matter duration, holding all other variables constant.
+
+**Business interpretation:**  
+Revision cycles function as a compounding delay mechanism within legal workflows. Each iteration introduces additional coordination, review, and negotiation requirements, which collectively extend overall turnaround time.
+
+This suggests a reinforcing operational loop:
+- more revisions → more stakeholder interaction  
+- more interaction → more coordination delays  
+- more delays → further revisions  
+
+**Business implication:**  
+Reducing revision cycles represents the highest-impact opportunity for improving legal turnaround time and operational efficiency.
+
+---
+
+### 2. Counsel Type (Internal vs External) (β = +40.20, p = 0.0248)
+
+Counsel type is statistically significant, indicating that matters handled by external counsel take approximately 40 additional days on average compared to internal counsel, controlling for all other variables.
+
+**Business interpretation:**  
+This reflects structural inefficiencies associated with external counsel engagement, including:
+- additional communication layers between internal and external teams  
+- longer feedback and response cycles  
+- coordination delays across organisational boundaries  
+- possible allocation of more complex matters to external counsel  
+
+Importantly, this effect persists even after controlling for complexity, revision count, and approval layers, indicating an independent operational impact.
+
+**Business implication:**  
+External counsel engagement introduces a measurable time premium. This supports improved matter triaging, clearer external counsel SLAs, and stronger coordination frameworks.
+
+---
+
+### 3. Complexity Score (Not statistically significant)
+
+Complexity score is not statistically significant in the regression model, despite showing positive relationships in earlier correlation analysis.
+
+**Business interpretation:**  
+This indicates that complexity does not independently drive legal matter duration when revision cycles, counsel type, and approval structures are accounted for.
+
+Instead, complexity likely affects duration indirectly by increasing the likelihood of:
+- additional revision cycles  
+- higher approval requirements  
+- greater stakeholder involvement  
+
+**Business implication:**  
+Efficiency improvements should focus on how complex matters are processed, rather than attempting to reduce inherent legal complexity.
+
+---
+
+### 4. Approval Layers (Not statistically significant)
+
+Approval layers are not statistically significant in the regression model.
+
+**Business interpretation:**  
+While approval layers show some relationship with duration in isolation, their effect is absorbed by other variables in the model, particularly revision cycles.
+
+This suggests that approval delays are not independent drivers of inefficiency but are instead embedded within broader workflow dynamics.
+
+**Business implication:**  
+Rather than reducing approval layers broadly, organisations should focus on eliminating redundant approvals within low-risk matters and improving approval efficiency in high-revision workflows.
+
+---
+
+### Overall Regression Insight
+
+The model demonstrates that legal matter duration is primarily driven by operational workflow dynamics rather than inherent legal complexity.
+
+The strongest driver of delay is revision cycles, followed by counsel structure, while complexity and approval layers play secondary or indirect roles.
+
+**Strategic implication:**  
+Legal turnaround time is most effectively improved through process optimisation (reducing revisions and improving coordination structures), rather than through changes to legal expertise or complexity management alone.
+
+## Regression Diagnostics
+
+```{r}
+par(mfrow = c(2, 2))
+
+plot(regression_model)
+```
+
+### Interpretation
+
+Diagnostic plots assess: - normality, - homoscedasticity, - linearity, - influential observations.
+
+# 10. Integrated Findings and Recommendations
+
+The analyses conducted in this study collectively demonstrate that the duration of legal matters is influenced not only by the inherent complexity of legal work, but also by operational workflow structures within the legal function. Across the exploratory analysis, visualisations, hypothesis testing, correlation analysis, and regression modelling, several operational variables consistently emerged as significant contributors to prolonged legal matter resolution time.
+
+The exploratory data analysis revealed that legal matter duration is highly unevenly distributed. While a significant number of matters were resolved within relatively short timeframes, a smaller number of matters experienced substantially prolonged durations, creating a right-skewed distribution. This suggests that certain operational conditions or workflow characteristics create bottlenecks capable of significantly delaying matter completion.
+
+The visualisation analysis further demonstrated that legal matters with higher complexity scores, greater revision counts, and more approval layers generally recorded longer turnaround times. In particular, the relationship between revision cycles and duration appeared consistently strong across multiple analyses, indicating that repeated negotiation and drafting cycles are a major operational driver of delay within legal workflows.
+
+The hypothesis testing results provided statistical evidence that legal matter duration differs significantly across counsel structures and matter categories. Matters handled through external counsel recorded significantly longer average durations compared to internally managed matters. This finding suggests that coordination requirements, external review timelines, and communication inefficiencies may materially affect turnaround performance. Similarly, the ANOVA results indicate that certain categories of legal matters inherently require longer processing periods due to their operational and regulatory complexity.
+
+The correlation analysis identified a particularly strong positive relationship between revision count and legal matter duration, suggesting that repeated negotiation rounds substantially increase completion timelines. Complexity score also demonstrated a meaningful positive relationship with duration, indicating that more sophisticated or operationally sensitive matters require longer review and approval periods.
+
+The regression model provided the most comprehensive insight into the combined effects of operational variables on legal matter duration. The model explained approximately 77.6% of the variation in legal matter duration, indicating strong explanatory power. Most notably, revision count emerged as the strongest statistically significant predictor of prolonged duration. The findings suggest that each additional revision cycle contributes materially to increased turnaround time, even when controlling for counsel type, matter type, approval structures, and complexity levels.
+
+Collectively, the analyses indicate that legal matter duration is not solely determined by legal complexity, but is heavily shaped by internal operational processes, negotiation structures, approval workflows, and coordination mechanisms. The findings therefore support the conclusion that meaningful improvements in legal turnaround time can be achieved through operational process optimisation rather than simply increasing legal staffing capacity.
+
+**Recommendations**
+
+Based on the findings of this study, several operational and process-improvement recommendations are proposed to improve legal matter turnaround time and enhance the efficiency of legal operations within the organisation.
+
+---
+
+## 1. Reduce Excessive Revision Cycles Through Standardisation
+
+The analysis identified revision count as the strongest predictor of prolonged legal matter duration, indicating that repeated drafting and negotiation cycles significantly delay matter completion.
+
+To address this, the legal function should expand the use of standardised contract templates, pre-approved clauses, fallback language libraries, and negotiation playbooks. For routine and low-risk matters, standard templates should be adopted more consistently to minimise unnecessary iterations and improve drafting efficiency.
+
+Clearer internal negotiation parameters will also help reduce repeated business-side amendments and improve overall turnaround time without compromising legal quality or compliance.
+
+---
+
+## 2. Streamline Approval Structures
+
+The findings suggest that additional approval layers contribute to longer matter duration, reflecting potential procedural inefficiencies.
+
+While governance remains essential, the organisation should adopt a risk-based approval framework, where low-risk or routine matters follow simplified approval routes, while high-risk or strategic matters undergo enhanced review. Delegated approval authority for standard transactions may also reduce bottlenecks and improve responsiveness.
+
+---
+
+## 3. Improve Early Stakeholder Alignment
+
+Frequent revisions may be driven by incomplete instructions or shifting stakeholder expectations during drafting stages.
+
+To mitigate this, the organisation should strengthen pre-engagement alignment processes, ensuring clearer commercial instructions, defined negotiation objectives, and earlier engagement between legal and business teams before drafting begins. Structured kickoff meetings can help reduce ambiguity and improve efficiency.
+
+---
+
+## 4. Develop Complexity-Based Workflow Segmentation
+
+The results show that matter complexity influences legal turnaround time, although not as strongly as revision cycles.
+
+The legal department should classify matters based on complexity and risk, allowing for differentiated workflows:
+
+- Low-complexity matters: streamlined, template-driven processes  
+- High-complexity matters: enhanced review and dedicated oversight  
+
+This approach will improve resource allocation and prevent routine matters from being unnecessarily delayed.
+
+---
+
+## 5. Strengthen Legal Operations Monitoring and Reporting
+
+The study highlights the importance of operational visibility in managing legal performance.
+
+The organisation should strengthen legal operations reporting through dashboards tracking key metrics such as:
+
+- turnaround time  
+- revision frequency  
+- approval cycle duration  
+- backlog levels  
+- external counsel performance  
+
+This will enable earlier identification of bottlenecks and support continuous process improvement.
+
+---
+
+## 6. Review External Counsel Engagement Processes
+
+The findings indicate that matters handled by external counsel take significantly longer than internal matters.
+
+To improve efficiency, the organisation should review external counsel management practices, including:
+
+- clearer service-level expectations  
+- standardised reporting timelines  
+- improved coordination mechanisms  
+- earlier alignment between internal and external teams  
+
+Where appropriate, routine matters may be retained internally to reduce delays and improve control.
+
+---
+
+## 7. Introduce Legal Operations Analytics as a Continuous Improvement Tool
+
+This study demonstrates the value of analytics in identifying inefficiencies in legal workflows.
+
+The organisation should institutionalise legal operations analytics to support continuous improvement by tracking trends in:
+
+- turnaround time  
+- revision cycles  
+- workload distribution  
+- process bottlenecks  
+
+Embedding data-driven decision-making into legal operations will enhance efficiency, transparency, and strategic support to the business.
+
+---
+
+**Overall, these recommendations are designed to reduce avoidable operational friction, improve consistency in legal processes, and enhance the speed and predictability of legal service delivery.**
+
+# 11. Limitations & Further Work
+
+This study is limited by its focus on a single upstream oil and gas legal environment, which may restrict generalisability to other industries. It also relies on historical operational data that may contain inconsistencies or incomplete records despite data cleaning. In addition, some relevant variables such as stakeholder responsiveness, transaction value, and urgency classification were not available for analysis. Finally, the results show statistical associations rather than causal relationships, meaning conclusions about cause and effect should be interpreted with caution.
+
+Future research could expand the analysis to multiple organisations and industries to improve generalisability and benchmarking. It could also apply predictive analytics and machine learning to forecast legal matter duration and identify delay risks. Time-series analysis may help assess improvements over time following process changes. Additionally, qualitative research could provide deeper insights into behavioural and organisational drivers of delays. Finally, future studies may incorporate broader operational metrics such as service levels, stakeholder satisfaction, and workload distribution to strengthen legal operations analytics.
+
+# References
+
+Adi, B. (2026). *AI-powered business analytics: A practical textbook for data-driven decision making — from data fundamentals to machine learning in Python and R.* Lagos Business School / markanalytics.online. <https://markanalytics.online>
+
+R Core Team. (2024). *R: A language and environment for statistical computing.* R Foundation for Statistical Computing. <https://www.r-project.org/>
+
+Wickham, H. (2016). *ggplot2: Elegant graphics for data analysis.* Springer.
+
+# Appendix: AI Usage Statement
+
+Artificial intelligence tools, including ChatGPT, were used to assist with structuring the Quarto document and generating sample code templates. However, all analytical decisions, interpretations, and recommendations were independently developed by the author.
